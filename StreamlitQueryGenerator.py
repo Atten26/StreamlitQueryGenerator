@@ -3,7 +3,7 @@ import pandas as pd
 import zipfile
 import io
 import os
-import pyperclip
+import clipboard
 
 def execute_query(excel_data, table_name):
     insert_query = 'INSERT INTO '
@@ -92,7 +92,7 @@ if uploaded_file and table_name:
 
     # Button to copy the query to the clipboard
     if st.button('Copy the query'):
-        pyperclip.copy(query_id_1)
+        clipboard.copy(query_id_1)
         st.success("Query copied to clipboard!")
 
     zip_buffer = io.BytesIO()
