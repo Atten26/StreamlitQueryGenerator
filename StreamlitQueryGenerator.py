@@ -77,7 +77,7 @@ def execute_query(excel_data, table_name):
 
     return df_final_query
 
-st.title('Query Upload and Execution App')
+st.title('Insert Query Generator')
 
 uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
 table_name = st.text_input("Table name")
@@ -89,11 +89,6 @@ if uploaded_file and table_name:
     # Show only the query with ID 1
     query_id_1 = df_queries[df_queries['ID'] == 1]['QUERY'].values[0]
     st.text_area("Output queries: 1 of " + str(df_queries.shape[0]), query_id_1, height=200)
-
-    # Button to copy the query to the clipboard
-    if st.button('Copy the query'):
-        clipboard.copy(query_id_1)
-        st.success("Query copied to clipboard!")
 
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
