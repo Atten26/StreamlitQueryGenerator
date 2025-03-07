@@ -63,7 +63,7 @@ def execute_query(excel_data, table_name):
             df_final_query_temp = pd.DataFrame(df_final_query_temp)
 
             df_final_query = pd.concat([df_final_query, df_final_query_temp], ignore_index=True)
-            query_num = 1
+            query_num = query_num + 1
             final_query = ''
 
     final_query = final_query[:-6]
