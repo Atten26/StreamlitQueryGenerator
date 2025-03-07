@@ -1,0 +1,8 @@
+streamlit
+pandas
+tempfile
+zipfile
+io
+os
+pyperclip
+openpyxl
