@@ -1,7 +1,2 @@
 streamlit
 pandas
-zipfile
-io
-os
-pyperclip
-openpyxl
