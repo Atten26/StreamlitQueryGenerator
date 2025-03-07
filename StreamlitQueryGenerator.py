@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import tempfile
 import zipfile
 import io
 import os
@@ -96,18 +95,11 @@ if uploaded_file and table_name:
         pyperclip.copy(query_id_1)
         st.success("Query copied to clipboard!")
 
-    temp_dir = tempfile.mkdtemp()
-    file_paths = []
-    for _, output_query in df_queries.iterrows():
-        file_path = os.path.join(temp_dir, "QUERY_" + str(output_query["ID"]) + ".txt")
-        with open(file_path, "w") as text_file:
-            text_file.write(output_query["QUERY"])
-        file_paths.append(file_path)
-
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-        for file_path in file_paths:
-            zip_file.write(file_path, os.path.basename(file_path))
+        for _, output_query in df_queries.iterrows():
+            file_path = "QUERY_" + str(output_query["ID"]) + ".txt"
+            zip_file.writestr(file_path, output_query["QUERY"])
 
     zip_buffer.seek(0)
 
