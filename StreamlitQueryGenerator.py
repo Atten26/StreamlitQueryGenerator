@@ -4,6 +4,13 @@ import zipfile
 import io
 import os
 
+import pathlib  # Per lavorare con percorsi di file
+import logging  # Per registrare informazioni di log
+import shutil   # Per copiare e fare backup dei file
+from bs4 import BeautifulSoup  # Per analizzare e modificare il file HTML
+
+
+
 def execute_query(excel_data, table_name):
     insert_query = 'INSERT INTO '
     table_name = '"' + table_name + '"'
@@ -78,7 +85,31 @@ def execute_query(excel_data, table_name):
     return df_final_query
 
 # Inizio Main
-import streamlit as st
+adsense_url = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+GA_AdSense = """
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle"
+        style="display:block; width:300px; height:250px;"
+        data-ad-client="ca-pub-4818294403178989"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+"""
+
+# Insert the script in the head tag of the static template inside your virtual
+index_path = pathlib.Path(st.__file__).parent / "static" / "index.html"
+logging.info(f'editing {index_path}')
+soup = BeautifulSoup(index_path.read_text(), features="html.parser")
+if not soup.find("script", src=adsense_url): 
+    bck_index = index_path.with_suffix('.bck')
+    if bck_index.exists():
+        shutil.copy(bck_index, index_path)  
+    else:
+        shutil.copy(index_path, bck_index)  
+    html = str(soup)
+    new_html = html.replace('<head>', '<head>\n' + GA_AdSense)
+    index_path.write_text(new_html)
 
 # Sidebar per navigare tra le pagine
 st.sidebar.title("Navigation")
