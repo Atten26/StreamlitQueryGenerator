@@ -77,30 +77,83 @@ def execute_query(excel_data, table_name):
 
     return df_final_query
 
-st.title('Insert Query Generator')
+# Inizio Main
+import streamlit as st
 
-uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
-table_name = st.text_input("Table name")
+# Sidebar per navigare tra le pagine
+st.sidebar.title("Navigation")
+pagina = st.sidebar.radio("Go to", ["Home", "Guide"])
 
-if uploaded_file and table_name:
-    excel_data = pd.read_excel(uploaded_file, dtype=str)
-    df_queries = execute_query(excel_data, table_name)
+if pagina == "Home":
+    st.title('Insert Query Generator')
 
-    # Show only the query with ID 1
-    query_id_1 = df_queries[df_queries['ID'] == 1]['QUERY'].values[0]
-    st.text_area("Output queries: 1 of " + str(df_queries.shape[0]), query_id_1, height=200)
+    uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"])
+    table_name = st.text_input("Table name")
 
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-        for _, output_query in df_queries.iterrows():
-            file_path = "QUERY_" + str(output_query["ID"]) + ".txt"
-            zip_file.writestr(file_path, output_query["QUERY"])
+    if uploaded_file and table_name:
+        excel_data = pd.read_excel(uploaded_file, dtype=str)
+        df_queries = execute_query(excel_data, table_name)
 
-    zip_buffer.seek(0)
+        # Show only the query with ID 1
+        query_id_1 = df_queries[df_queries['ID'] == 1]['QUERY'].values[0]
+        st.text_area("Output queries: 1 of " + str(df_queries.shape[0]), query_id_1, height=200)
 
-    st.download_button(
-        label="Download queries",
-        data=zip_buffer,
-        file_name="queries.zip",
-        mime="application/zip"
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+            for _, output_query in df_queries.iterrows():
+                file_path = "QUERY_" + str(output_query["ID"]) + ".txt"
+                zip_file.writestr(file_path, output_query["QUERY"])
+
+        zip_buffer.seek(0)
+
+        st.download_button(
+            label="Download queries",
+            data=zip_buffer,
+            file_name="queries.zip",
+            mime="application/zip"
+        )
+elif pagina == "Guide":
+    st.title("User Guide for the Excel-to-SQL Query Generator")
+    
+    st.subheader("Overview")
+    st.write(
+        "This application allows users to generate SQL INSERT queries effortlessly "
+        "by uploading an Excel file containing the data you want to insert into the database, "
+        "naming the target database table, and following simple steps. "
+        "The generated queries can then be executed in the DBACockpit to insert records into the desired table."
     )
+    
+    st.subheader("How to Use the Application")
+    
+    # Sezione con elenchi e spaziature corrette
+    st.markdown("""
+    1. **Upload the Excel File**:
+        - Prepare your Excel file:
+            - The first row **must** contain the column headers (e.g., `ID`, `Name`, `Date`).
+            - The subsequent rows should include the data records to be inserted.
+        - Upload the file through the designated upload button in the application.
+
+    2. **Provide the Table Name**:
+        - Specify the name of the target database table in the input field.
+
+    3. **Generate SQL Queries**:
+        - Press **Enter**.
+        - The application will process your data and generate one or more SQL INSERT queries.
+        - If multiple queries are generated, the first query will be displayed on the screen for easy preview.
+
+    4. **Copy or Download Queries**:
+        - To copy a single query:
+            - Click on the query text, press **Ctrl + A**, then copy it using **Ctrl + C**.
+        - To download all queries:
+            - Use the **Download queries** button to save a ZIP file containing all generated queries.
+            - **Note**: If the data volume is large, the application will divide it into multiple queries to ensure proper execution.
+
+    5. **Execute the Queries in DBACockpit**:
+        - Open the **dbacockpit** transaction on the SAP gui.
+        - Navigate to:
+            - `Diagnostics` > `SQL Editor`.
+        - Paste the query into the designated input box.
+        - Execute the query to insert the records into the table.
+    """)
+
+# Fine del codice
