@@ -30,6 +30,7 @@ def execute_query(excel_data, table_name):
         if len(final_query) == 0:
             final_query = insert_query + col_str + '(\n'
         row_str = 'SELECT '
+        count_len_row = 0
         for col in excel_data.columns:
             if str(row[col]) == 'nan':
                 count_len_row = count_len_row + len('\'\',' + ' FROM DUMMY UNION\n')
