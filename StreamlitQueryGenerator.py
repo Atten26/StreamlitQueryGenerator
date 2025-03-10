@@ -3,7 +3,6 @@ import pandas as pd
 import zipfile
 import io
 import os
-import clipboard
 
 def execute_query(excel_data, table_name):
     insert_query = 'INSERT INTO '
